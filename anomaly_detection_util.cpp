@@ -93,7 +93,15 @@ Line linear_reg(Point** points, int size) {
 }
 // returns the deviation between point p and the line equation of the points
 float dev(Point p,Point** points, int size) {
-    
+    float deviation = 0;
+    for (int i=0; i < size; i++) {
+        for (int j=0; j < size; j++) {
+            if (p.x == points[i,j] -> x) {
+                deviation = abs(points[i,j] ->y - p.y);
+            }
+        }
+    }
+    return deviation;
 }
 // returns the deviation between point p and the line
 float dev(Point p,Line l);

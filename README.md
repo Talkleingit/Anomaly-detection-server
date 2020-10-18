@@ -1,1 +1,1 @@
-First milestone in advanced programming course in c++.
+First milestone.

@@ -1,5 +1,6 @@
 #include <iostream>
-#include <math.h>
+#include <cmath>
+
 /**
  * @brief calculates variance
  * 
@@ -89,13 +90,16 @@ Point(float x, float y):x(x),y(x){}
  * @return Line 
  */
 Line linear_reg(Point** points, int size) {
-    float* xCoordinate = nullptr;
-    float* yCoordinate = nullptr;
+    float xCoordinate[size * size];
+    float yCoordinate[size * size];
     float a = 0, b = 0, xAvg = 0, yAvg = 0;
     int k =0;
     //create 2 arrays (one for x coordinates and one for the y coordinates).
     for (int i=0; i<size; i++) {
         for (int j =0; j<size; j++) {
+            if (k == size) {
+                break;
+            }
             xCoordinate[k] = points[i,j]->x;
             yCoordinate[k] = points[i,j]->y;
             k = k+1;

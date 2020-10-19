@@ -1,10 +1,16 @@
 #include <iostream>
 #include <math.h>
-// returns the variance of X and Y
+/**
+ * @brief calculates variance
+ * 
+ * @param x 
+ * @param size 
+ * @return float 
+ */
 float var(float* x, int size) {
     float sAvg = 0, mue = 0;
     //calculating the sqaured expectancy
-    for (int i =0; i< size; i++) {
+    for (int i = 0; i < size; i++) {
         sAvg += x[i] * x[i];
     }
     sAvg = sAvg / size;
@@ -15,9 +21,16 @@ float var(float* x, int size) {
     mue = mue / size;
     return sAvg - (mue * mue);
 }
-// returns the covariance of X and Y
+/**
+ * @brief calculates covariance
+ * 
+ * @param x 
+ * @param y 
+ * @param size 
+ * @return float 
+ */
 float cov(float* x, float* y, int size) {
-    float xyAvg =0, xAvg =0, yAvg =0;
+    float xyAvg = 0, xAvg = 0, yAvg = 0;
     //calculating E(XY)
     for (int i=0; i<size; i++) {
         xyAvg += x[i] * y[i];
@@ -35,7 +48,14 @@ float cov(float* x, float* y, int size) {
     yAvg = yAvg / size;
     return xyAvg - (xAvg * yAvg);
 }
-// returns the Pearson correlation coefficient of X and Y
+/**
+ * @brief calculates pearson correlation
+ * 
+ * @param x 
+ * @param y 
+ * @param size 
+ * @return float 
+ */
 float pearson(float* x, float* y, int size) {
     float sigmaX = var(x, size);
     float sigmaY = var(y, size);
@@ -61,11 +81,17 @@ public:
 const float x,y;
 Point(float x, float y):x(x),y(x){}
 };
-// performs a linear regression and return s the line equation
+/**
+ * @brief performs linear regression and returns a line as output.
+ * 
+ * @param points 
+ * @param size 
+ * @return Line 
+ */
 Line linear_reg(Point** points, int size) {
     float* xCoordinate = nullptr;
     float* yCoordinate = nullptr;
-    float a =0, b =0, xAvg =0, yAvg =0;
+    float a = 0, b = 0, xAvg = 0, yAvg = 0;
     int k =0;
     //create 2 arrays (one for x coordinates and one for the y coordinates).
     for (int i=0; i<size; i++) {
@@ -78,7 +104,7 @@ Line linear_reg(Point** points, int size) {
     //known identity: slope is the cov(x,y) / var(x). the lengths of both arrays are size^2
     a = cov(xCoordinate, yCoordinate, size * size);
     //calculating avg of X and Y
-    for (int i=0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         xAvg += xCoordinate[i];
         yAvg += yCoordinate[i];
     }
@@ -91,11 +117,18 @@ Line linear_reg(Point** points, int size) {
     return line;
 
 }
-// returns the deviation between point p and the line equation of the points
+/**
+ * @brief calculates the deviation between a given point and a 2d array of points.
+ * 
+ * @param p 
+ * @param points 
+ * @param size 
+ * @return float 
+ */
 float dev(Point p,Point** points, int size) {
     float deviation = 0;
-    for (int i=0; i < size; i++) {
-        for (int j=0; j < size; j++) {
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
             if (p.x == points[i,j] -> x) {
                 deviation = abs(points[i,j] ->y - p.y);
             }
@@ -104,7 +137,9 @@ float dev(Point p,Point** points, int size) {
     return deviation;
 }
 // returns the deviation between point p and the line
-float dev(Point p,Line l);
+float dev(Point p,Line l) {
+    return 0;
+}
 
 void say_hello(){
     std::cout << "Hello, from anomaly_detection_util!\n";

@@ -91,21 +91,34 @@ Line linear_reg(Point** points, int size) {
     return line;
 
 }
-// returns the deviation between point p and the line equation of the points
+/**
+ * @brief returns the deviation between point p and the line equation of the points
+ * 
+ * @param p 
+ * @param points 
+ * @param size 
+ * @return float 
+ */
 float dev(Point p,Point** points, int size) {
     float deviation = 0;
-    for (int i=0; i < size; i++) {
-        for (int j=0; j < size; j++) {
-            if (p.x == points[i,j] -> x) {
-                deviation = abs(points[i,j] ->y - p.y);
-            }
-        }
-    }
+    Line line = linear_reg(points, size);
+    //using x cooridinate from the point p to determine the y value on the line equation.
+    float yCooridinate = line.a * p.x + line.b;
+    deviation = abs(yCooridinate - p.y);
     return deviation;
+     
 }
-// returns the deviation between point p and the line
-float dev(Point p,Line l);
-
+/**
+ * @brief returns the deviation between point p and the line
+ * 
+ * @param p 
+ * @param l 
+ * @return float 
+ */
+float dev(Point p,Line l) {
+    float yCooridinate = l.a * p.x + l.b;
+    return abs(yCooridinate - p.y);
+}
 void say_hello(){
     std::cout << "Hello, from anomaly_detection_util!\n";
 }

@@ -61,8 +61,8 @@ float pearson(float* x, float* y, int size) {
     float sigmaY = var(y, size);
     float correlation = 0;
     //standard deviations
-    sigmaX = std::sqrt(sigmaX);
-    sigmaY = std::sqrt(sigmaY);
+    sigmaX = sqrt(sigmaX);
+    sigmaY = sqrt(sigmaY);
     //pearson correlation
     correlation = cov(x,y,size) / (sigmaX * sigmaY);
     return correlation;
@@ -130,7 +130,7 @@ float dev(Point p,Point** points, int size) {
     Line line = linear_reg(points, size);
     //using x cooridinate from the point p to determine the y value on the line equation.
     float yCooridinate = line.a * p.x + line.b;
-    deviation = abs(yCooridinate - p.y);
+    deviation = std::abs(yCooridinate - p.y);
     return deviation;
      
 }

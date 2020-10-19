@@ -61,8 +61,8 @@ float pearson(float* x, float* y, int size) {
     float sigmaY = var(y, size);
     float correlation = 0;
     //standard deviations
-    sigmaX = sqrt(sigmaX);
-    sigmaY = sqrt(sigmaY);
+    sigmaX = std::sqrt(sigmaX);
+    sigmaY = std::sqrt(sigmaY);
     //pearson correlation
     correlation = cov(x,y,size) / (sigmaX * sigmaY);
     return correlation;
@@ -127,20 +127,24 @@ Line linear_reg(Point** points, int size) {
  */
 float dev(Point p,Point** points, int size) {
     float deviation = 0;
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            if (p.x == points[i,j] -> x) {
-                deviation = abs(points[i,j] ->y - p.y);
-            }
-        }
-    }
+    Line line = linear_reg(points, size);
+    //using x cooridinate from the point p to determine the y value on the line equation.
+    float yCooridinate = line.a * p.x + line.b;
+    deviation = abs(yCooridinate - p.y);
     return deviation;
+     
 }
-// returns the deviation between point p and the line
+/**
+ * @brief returns the deviation between point p and the line
+ * 
+ * @param p 
+ * @param l 
+ * @return float 
+ */
 float dev(Point p,Line l) {
-    return 0;
+    float yCooridinate = l.a * p.x + l.b;
+    return std::abs(yCooridinate - p.y);
 }
-
 void say_hello(){
     std::cout << "Hello, from anomaly_detection_util!\n";
 }

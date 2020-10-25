@@ -90,36 +90,36 @@ Point(float x, float y):x(x),y(x){}
  * @return Line 
  */
 Line linear_reg(Point** points, int size) {
-    float xCoordinate[size * size];
-    float yCoordinate[size * size];
-    float a = 0, b = 0, xAvg = 0, yAvg = 0;
-    int k =0;
-    //create 2 arrays (one for x coordinates and one for the y coordinates).
-    for (int i=0; i<size; i++) {
-        for (int j =0; j<size; j++) {
-            if (k == size) {
-                break;
-            }
-            xCoordinate[k] = points[i,j]->x;
-            yCoordinate[k] = points[i,j]->y;
-            k = k+1;
-        }
-    }
-    //known identity: slope is the cov(x,y) / var(x). the lengths of both arrays are size^2
-    a = cov(xCoordinate, yCoordinate, size * size);
-    //calculating avg of X and Y
-    for (int i = 0; i < size; i++) {
-        xAvg += xCoordinate[i];
-        yAvg += yCoordinate[i];
-    }
-    xAvg = xAvg / (size * size);
-    yAvg = yAvg / (size * size);
-    //known identity
-    b = yAvg - a * xAvg;
-    //create result line
-    Line line(a,b);
-    return line;
+	float xCoordinate[size * size];
+	float yCoordinate[size * size];
+	float a = 0, b = 0, xAvg = 0, yAvg = 0;
+	int k = 0;
+	//create 2 arrays (one for x coordinates and one for the y coordinates).
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
+			if (k == size ){
+				break;
+			}
+			xCoordinate[k] = points[i, j]->x;
+			yCoordinate[k] = points[i, j]->y;
+			k = k + 1;
 
+		}
+	}
+	//known identity: slope is the cov(x,y) / var(x). the lengths of both arrays are size^2
+	a = cov(xCoordinate, yCoordinate, size * size) / var(xCoordinate, size * size);
+	//calculating avg of X and Y
+	for (int i = 0; i < size; i++) {
+		xAvg += xCoordinate[i];
+		yAvg += yCoordinate[i];
+	}
+	xAvg = xAvg / (size * size);
+	yAvg = yAvg / (size * size);
+	//known identity
+	b = yAvg - a * xAvg;
+	//create result line
+	Line line(a, b);
+	return line;
 }
 /**
  * @brief calculates the deviation between a given point and a 2d array of points.

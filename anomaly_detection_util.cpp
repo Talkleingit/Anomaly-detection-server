@@ -88,8 +88,6 @@ public:
  * @param size
  * @return Line
  */
-
-
 Line linear_reg(Point** points, int size) {
 	float xCoordinate[size];
 	float yCoordinate[size];
@@ -99,7 +97,7 @@ Line linear_reg(Point** points, int size) {
 		xCoordinate[i] = points[i]->x;
 		yCoordinate[i] = points[i]->y;
 	}
-	//known identity: slope is the cov(x,y) / var(x). the lengths of both arrays are size^2
+	//known identity: slope is the cov(x,y) / var(x). the lengths of both arrays are size
 	a = cov(xCoordinate, yCoordinate, size) / var(xCoordinate, size);
 	//calculating avg of X and Y
 	for (int i = 0; i < size; i++) {

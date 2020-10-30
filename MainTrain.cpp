@@ -6,8 +6,7 @@
  */
 
 #include <iostream>
-#include "anomaly_detection_util.h"
-
+#include "anomaly_detection_util.cpp"
 using namespace std;
 
 bool wrong(float val, float expected){

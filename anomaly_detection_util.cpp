@@ -1,3 +1,9 @@
+/*
+ * anomaly_detection_util.cpp
+ *
+ * Author: Tal Klein, 207681354
+ */
+
 #include <iostream>
 #include <cmath>
 #include "anomaly_detection_util.h"
@@ -79,21 +85,6 @@ float pearson(float* x, float* y, int size) {
 	return correlation;
 
 }
-/*
-class Line {
-public:
-	const float a, b;
-	Line(float a, float b) :a(a), b(b) {}
-	float f(float x) {
-		return a * x + b;
-	}
-};
-class Point {
-public:
-	const float x, y;
-	Point(float x, float y) :x(x), y(x) {}
-};
-*/
 /**
  * @brief performs linear regression and returns a line as output.
  *

@@ -1,5 +1,16 @@
 #include <iostream>
 #include <cmath>
+#include "anomaly_detection_util.h"
+
+
+float avg(float* x, int size) {
+	int sum =0;
+	for (int i =0; i<size; i++) {
+		sum += x[i];
+	}
+	return sum /size;
+}
+
 /**
  * @brief calculates variance
  *
@@ -68,6 +79,7 @@ float pearson(float* x, float* y, int size) {
 	return correlation;
 
 }
+/*
 class Line {
 public:
 	const float a, b;
@@ -81,6 +93,7 @@ public:
 	const float x, y;
 	Point(float x, float y) :x(x), y(x) {}
 };
+*/
 /**
  * @brief performs linear regression and returns a line as output.
  *

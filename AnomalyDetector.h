@@ -5,7 +5,7 @@
 
 #include <string>
 #include <vector>
-#include "timeseries.h"
+#include "TimeSeries.h"
 #include "math.h"
 using namespace std;
 

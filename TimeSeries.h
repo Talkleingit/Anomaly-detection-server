@@ -3,23 +3,32 @@
 #define TIMESERIES_H_
 #include <iostream>
 #include <cstring>
-//using namespace std;
+#include <fstream>
+#include <vector>
+#include <iterator>
+using namespace std;
 
+
+	//print - content	
 class TimeSeries{
-char* m_CSVfileName;
-public:
-	TimeSeries(const char* CSVfileName){
-		int n = strlen(CSVfileName);
-		this->m_CSVfileName = new char[n];
-		for (int i=0; i< n; i++) {
-			this->m_CSVfileName[i] = CSVfileName[i];
-		}
+	vector<string> m_features;
+	vector<vector<double>> m_dataTable;
+	public:
+	TimeSeries(const char* CSVfileName);
+	const vector<string>& getFeatures() const {
+		return m_features;
 	}
-	std::string get_features_from_csv() {
+	void add_row(vector<double> row_to_add) {
+		m_dataTable.push_back(row_to_add);
+	}
+	const double& get_val_of_feature(double time, string feature) const {
 		
-	}
 
+
+	}	
 };
+
+
 
 
 

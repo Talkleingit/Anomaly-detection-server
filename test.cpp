@@ -2,12 +2,13 @@
 
 #include <iostream>
 #include <vector>
-#include "AnomalyDetector.h"
-#include "SimpleAnomalyDetector.h"
+#include "anomaly_detection_util.h"
 #include <fstream>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include <math.h>
+#include "TimeSeries.h"
+
 void generateTrainCSV(float a1,float b1, float a2, float b2){
 	ofstream out("trainFile1.csv");
 	out<<"Time,Altitude,Air speed,Heading"<<endl;
@@ -21,6 +22,23 @@ void generateTrainCSV(float a1,float b1, float a2, float b2){
 	out.close();
 }
 int main() {
-    generateTrainCSV(1.2,2.4,3.5,4.6);
-    return 0;
+	TimeSeries ts("trainFile1.csv");
+	cout <<"number of rows " << ts.get_num_of_rows() << endl;
+	cout << ts.get_val_of_feature_at_specified_time(26,"Heading") << endl;
+	vector<float> vc;
+	vector<float>::iterator it = vc.begin();
+	ts.add_row(vc);
+	
+	cout << ts.get_val_of_feature_at_specified_time(1,"A") << endl;
+	vector<float> col = ts.get_col("Heading");
+	for (int i=0; i<col.size(); i++) {
+		cout<<col[i] <<",";
+	}
+	 
+	
+	
+
+	
+
+
 }

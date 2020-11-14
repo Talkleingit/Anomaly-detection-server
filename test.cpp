@@ -22,23 +22,51 @@ void generateTrainCSV(float a1,float b1, float a2, float b2){
 	out.close();
 }
 int main() {
-	TimeSeries ts("trainFile1.csv");
-	cout <<"number of rows " << ts.get_num_of_rows() << endl;
-	cout << ts.get_val_of_feature_at_specified_time(26,"Heading") << endl;
-	vector<float> vc;
-	vector<float>::iterator it = vc.begin();
-	ts.add_row(vc);
-	
-	cout << ts.get_val_of_feature_at_specified_time(1,"A") << endl;
-	vector<float> col = ts.get_col("Heading");
-	for (int i=0; i<col.size(); i++) {
-		cout<<col[i] <<",";
-	}
-	 
-	
-	
+	srand (time(NULL));
+	float a1=1+rand()%10, b1=-50+rand()%100;
+	float a2=1+rand()%20 , b2=-50+rand()%100;
+	// test the learned model: (40 points)
+	// expected correlations:
+	//	A-C: y=a1*x+b1
+	//	B-D: y=a2*x+b2
 
-	
+	generateTrainCSV(a1,b1,a2,b2);
+	TimeSeries ts("trainFile1.csv");
+	int n = ts.get_num_of_rows();
+	float v1[n];
+	float v2[n];
+	float v3[n];
+	float v4[n];
+	ts.fill_col("Time", v1);
+	ts.fill_col("Altitude", v2);
+	ts.fill_col("Air speed", v3);
+	ts.fill_col("Heading", v4);
+	for (int j =0; j<n; j++) {
+		cout << v1[j] << ",";
+	}
+	cout << endl;
+	for (int j =0; j<n; j++) {
+		cout << v2[j] << ",";
+	}
+	cout << endl;
+	for (int j =0; j<n; j++) {
+		cout << v3[j] << ",";
+	}
+	cout << endl;
+	for (int j =0; j<n; j++) {
+		cout << v4[j] << ",";
+	}
+	cout << endl;
+	vector<const float*> vk;
+	for (int i=0; i< n; i++) {
+		vk.push_back(ts.get_row(i));
+	}
+	for (int i=0; i< n; i++) {
+		for (int j=0; j< ts.getFeatures().size(); j++) {
+			cout << (vk[i])[j] << ",";
+		}
+		cout << endl;
+	} 
 
 
 }

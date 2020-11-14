@@ -10,12 +10,19 @@
 #include <sstream>
 using namespace std;
 
-	//print - content	
+//print - content	
 class TimeSeries{
     vector<string> m_features;
-	vector<vector<float>> m_dataTable;
+	vector<float*> m_dataTable;
 	fstream m_fs;
-	float m_numOfRows;
+	int m_numOfRows;
+
+	/**
+	 * @brief Get the index of feature within the feature vector.
+	 * 
+	 * @param feature 
+	 * @return int 
+	 */
 	int get_index_of_feature(const string& feature) const{
 		string feat = feature;
 		vector<string> vec = m_features;
@@ -26,11 +33,16 @@ class TimeSeries{
 		return index_of_feature;
 	}
 	public:
+	/**
+	 * @brief Construct a new Time Series object
+	 * 
+	 * @param CSVfileName 
+	 */
 	TimeSeries(const char* CSVfileName){
 		TimeSeries::m_fs.open(CSVfileName);
     bool found_features = false;
     string row; 
-    float count =0;
+    int count =0;
     while (getline(m_fs,row)) {
         std::istringstream strStream(row);
         if (!found_features) {
@@ -48,91 +60,117 @@ class TimeSeries{
         }
         else {
                 vector<float> tmp;
+				int size = tmp.size();
+                float* new_row = new float[size];
+				int k = 0;
                 while (!strStream.eof()) {
                     string value;
                     getline(strStream,value,',');
                     //convert the string to cstring
                     const char* str = value.c_str();
-                    //adds numerical value into vector
-                    tmp.push_back(std::atof(str));
+					//add val to row (convert to float)
+					new_row[k] = std::atof(str);
+					k++;
                 }
                 //add row of values to the data table member
-                TimeSeries::m_dataTable.push_back(tmp);
+                TimeSeries::m_dataTable.push_back(new_row);
                 //increment size of data table
                 count++;
         }
     }
-    TimeSeries::m_numOfRows = count;
+    this->m_numOfRows = count;
 	}
+	
+	/**
+	 * @brief Get the num of rows
+	 * 
+	 * @return int 
+	 */
 	int get_num_of_rows() {
 		return this->m_numOfRows;
 	}
-	const vector<vector<float>>& get_dataTable() {
+	
+	/**
+	 * @brief Get the dataTable member
+	 * 
+	 * @return const vector<float*>& 
+	 */
+	const vector<float*>& get_dataTable() {
 		return this->m_dataTable;
 	}
+	/**
+	 * @brief Get the Features member, the header of the csv file.
+	 * 
+	 * @return const vector<string>& 
+	 */
 	const vector<string>& getFeatures() const {return m_features;}
-	void add_row(vector<float> row_to_add) {
+	
+	/**
+	 * @brief adds a row to the data table.
+	 * 
+	 * @param row_to_add 
+	 */
+	void add_row(float* row_to_add) {
 		this->m_dataTable.push_back(row_to_add);
 		this->m_numOfRows+=1;
 	}
-    float get_val_of_feature_at_specified_time(float time, const string& feature) const {
-		const double EPSILON = 0.000000000000000000001;
+    
+	/**
+	 * @brief Get the val of feature at a specified time
+	 * 
+	 * @param time 
+	 * @param feature 
+	 * @return float 
+	 */
+	float get_val_of_feature_at_specified_time(float time, const string& feature) const {
 		int index_of_feature = get_index_of_feature(feature);
-		vector<vector<float>> dataMat = this->m_dataTable;
-		vector<vector<float>>::iterator it = dataMat.begin();
+		vector<float*> dataMat = this->m_dataTable;
 		float found = 0.0;
 		//search through first column. When time is found--> reach the correct index of specified feature and return value.
 		for (int i=0; i<this->m_numOfRows; i++ ) {
-			if (dataMat[i][0] == time) {
+			if (dataMat[i][0] == time -1) {
 				found = dataMat[i][index_of_feature];
 				break;
 			}
 		}
 		return found;
 	}
-	//get row by index
-	vector<float> get_row(int i) const {
-		const int numOfCols = this->m_features.size();
-		vector<vector<float>> dataMat = this->m_dataTable;
-		vector<float> vec;
-		for (int index = 0; index< this->m_numOfRows; index++) {
-			if (index == i) {
-				for (int j =0; j<numOfCols; j++) {
-					vec.push_back(dataMat[index][j]);
-				}
-				break;
-			}
-		}
-		return vec;
+	
+	/**
+	 * @brief Get the row according to a specific index.
+	 * 
+	 * @param i 
+	 * @return const float* 
+	 */
+	const float* get_row(int i) const {
+		vector<float*> dataMat = this->m_dataTable;
+		const float* row = dataMat[i];
+        return row;
 	}
-	const vector<float>* get_col(const string& feature)	 {
-		vector<vector<float>> dataMat = m_dataTable;
-		vector<float> vec;
+
+	/**
+	 * @brief fills an empty float array (col) with the values from the correct colomn in the data table.
+	 * 		 
+	 * @param feature 
+	 * @param col 
+	 */
+    void fill_col(const string& feature, float* col)	 {
+		vector<float*> dataMat = m_dataTable;
 		int index_of_feature = get_index_of_feature(feature);
 		for (int i=0; i<this->m_numOfRows; i++) {
-			vec.push_back(dataMat[i][index_of_feature]);
+            col[i] = dataMat[i][index_of_feature];
 		}
-		return vec;
 	}
-	void Print() {
-		int numOfCols =this->m_features.size();
-		for (int i=0; i<4; i++ ) {
-			cout<<m_features[i]<<endl
-		}
-		for (int i=0; i<m_numOfRows; i++){
-			for (int j =0; j<numOfCols; j++) {
-				if (j==numOfCols-1) {
-					cout << this->m_dataTable[i][j] << endl;
-				}
-				else {
-				cout << this->m_dataTable[i][j]<<',';
-				}
 
-			}
-		}
-	}
-	//destructor
+	/**
+	 * @brief Destroy the Time Series object
+	 * 
+	 */
 	~TimeSeries(){
+		//delete each row in the data table.
+		for (int i=0; i<this->m_numOfRows; i++) {
+			delete[] m_dataTable[i];
+		}
 		this->m_fs.close();
 	}
 };

@@ -2,7 +2,7 @@
 #include "AnomalyDetector.h"
 #include <vector>
 #include "anomaly_detection_util.h"
-#include "timeseries.h"
+#include "TimeSeries.h"
 SimpleAnomalyDetector::SimpleAnomalyDetector(){};
 
 SimpleAnomalyDetector::~SimpleAnomalyDetector() {
@@ -30,7 +30,7 @@ bool features_already_in(vector<correlatedFeatures> cf, string fi, string fj) {
  * 
  * @param ts 
  */
-void SimpleAnomalyDetector::learnNormal(const timeseries& ts) {
+void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts) {
 	const int feature_size = ts.get_num_of_rows();
 	const int num_of_features = ts.get_num_of_features();
 	float features_correlation = 0.0;
@@ -98,7 +98,7 @@ void SimpleAnomalyDetector::learnNormal(const timeseries& ts) {
  * @param ts 
  * @return vector<AnomalyReport> 
  */
-vector<AnomalyReport> SimpleAnomalyDetector::detect(const timeseries& ts) {
+vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts) {
 	vector<AnomalyReport> vec_report;
 	const int size = ts.get_num_of_rows();
 	const int row_size = ts.get_num_of_features();

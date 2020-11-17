@@ -8,7 +8,7 @@
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include <math.h>
-#include "timeseries.h"
+#include "TimeSeries.h"
 using namespace std;
 
 // this is a simple test to put you on the right track
@@ -71,7 +71,7 @@ int main(){
 	//	B-D: y=a2*x+b2
 
 	generateTrainCSV(a1,b1,a2,b2);
-	timeseries ts("trainFile1.csv");
+	TimeSeries ts("trainFile1.csv");
 	SimpleAnomalyDetector ad;
 	ad.learnNormal(ts);
 	vector<correlatedFeatures> cf=ad.getNormalModel();
@@ -88,7 +88,7 @@ int main(){
 	// one simply anomaly is injected to the data
 	int anomaly=5+rand()%90; // one anomaly injected in a random time step
 	generateTestCSV(a1,b1,a2,b2,anomaly);
-	timeseries ts2("testFile1.csv");
+	TimeSeries ts2("testFile1.csv");
 	vector<AnomalyReport> r = ad.detect(ts2);
 
 	bool anomlyDetected=false;

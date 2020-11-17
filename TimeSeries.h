@@ -1,6 +1,6 @@
 
-#ifndef timeseries_H_
-#define timeseries_H_
+#ifndef TimeSeries_H_
+#define TimeSeries_H_
 #include <iostream>
 #include <cstring>
 #include <fstream>
@@ -10,9 +10,9 @@
 #include <sstream>
 using namespace std;
 
-class timeseries{
+class TimeSeries{
 	/**
-	 * @brief class timeseries - csv handeling.
+	 * @brief class TimeSeries - csv handeling.
 	 * 
 	 */
     vector<float*> m_dataTable;
@@ -26,7 +26,7 @@ public:
 	 * 
 	 * @param CSVfileName 
 	 */
-	timeseries(const char* CSVfileName);
+	TimeSeries(const char* CSVfileName);
          
     
 	/**
@@ -108,7 +108,7 @@ public:
 	 * @brief Destroy the Time Series object
 	 * 
 	 */
-    ~timeseries();
+    ~TimeSeries();
 };
 
-#endif /* timeseries_H_ */
+#endif /* TimeSeries_H_ */

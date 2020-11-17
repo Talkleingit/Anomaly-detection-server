@@ -74,12 +74,12 @@ public:
     float* get_col_by_index(int i) const;
 
 	/**
-	 * @brief 
+	 * @brief fills a row with the values of the ith row in the data table.
 	 * 
 	 * @param i 
 	 * @param row 
 	 */
-    void fill_row(int i, float* row);
+    void fill_row(int i, float* row) const;
 	
 	/**
 	 * @brief adds a row to the data table

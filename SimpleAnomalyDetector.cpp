@@ -6,7 +6,6 @@
 SimpleAnomalyDetector::SimpleAnomalyDetector(){};
 
 SimpleAnomalyDetector::~SimpleAnomalyDetector() {
-	// TODO Auto-generated destructor stub
 }
 /**
  * @brief Determines if the 2 features are already in the vector cf.
@@ -93,6 +92,12 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts) {
 		delete[] vec_of_point_arrays[i];    //free allocated point array
 	}	
 }
+/**
+ * @brief Searches for anomalies in a given time series object. If an anomaly is found a report is saved in a vector of AnomalyReport
+ * 
+ * @param ts 
+ * @return vector<AnomalyReport> 
+ */
 vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts) {
 	vector<AnomalyReport> vec_report;
 	const int size = ts.get_num_of_rows();

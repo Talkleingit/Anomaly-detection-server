@@ -110,6 +110,7 @@ Line linear_reg(Point** points, int size) {
 	}
 	xAvg = xAvg / (size);
 	yAvg = yAvg / (size);
+	
 	//known identity
 	b = yAvg - a * xAvg;
 	//create result line

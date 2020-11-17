@@ -2,16 +2,19 @@
 
 #include <iostream>
 #include <vector>
-#include "anomaly_detection_util.h"
+#include "AnomalyDetector.h"
+#include "SimpleAnomalyDetector.h"
 #include <fstream>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include <math.h>
-#include "TimeSeries.h"
 
+using namespace std;
+
+// this is a simple test to put you on the right track
 void generateTrainCSV(float a1,float b1, float a2, float b2){
 	ofstream out("trainFile1.csv");
-	out<<"Time,Altitude,Air speed,Heading"<<endl;
+	out<<"A,B,C,D"<<endl;
 	Line ac(a1,b1);
 	Line bd(a2,b2);
 	for(int i=1;i<=100;i++){
@@ -21,10 +24,48 @@ void generateTrainCSV(float a1,float b1, float a2, float b2){
 	}
 	out.close();
 }
-int main() {
+
+void generateTestCSV(float a1,float b1, float a2, float b2, int anomaly){
+	ofstream out("testFile1.csv");
+	out<<"A,B,C,D"<<endl;
+	Line ac(a1,b1);
+	Line bd(a2,b2);
+	for(int i=1;i<=100;i++){
+		float a=i;
+		float b=rand()%40;
+		if(i!=anomaly)
+			out<<a<<","<<b<<","<<ac.f(a)-0.02+(rand()%40)/100.0f<<","<<bd.f(b)-0.02+(rand()%40)/100.0f<<endl;
+		else
+			out<<a<<","<<b<<","<<ac.f(a)+1<<","<<bd.f(b)-0.02+(rand()%40)/100.0f<<endl;
+	}
+	out.close();
+}
+
+void checkCorrelationTrain(correlatedFeatures c,string f1, string f2, float a, float b){
+	if(c.feature1==f1){
+		if(c.feature2!=f2)
+			cout<<"wrong correlated feature of "<<f1<<" (-20)"<<endl;
+		else{
+			if(c.corrlation<0.99)
+				cout<<f1<<"-"<<f2<<" wrong correlation detected (-5)"<<endl;
+			if(c.lin_reg.a<a-0.5f || c.lin_reg.a>a+0.5f)
+				cout<<f1<<"-"<<f2<<" wrong value of line_reg.a (-5)"<<endl;
+			if(c.lin_reg.b<b-0.5f || c.lin_reg.b>b+0.5f)
+				cout<<f1<<"-"<<f2<<" wrong value of line_reg.b (-5)"<<endl;
+            cout<<"threshold: "<< c.threshold << endl;
+			if(c.threshold>0.3)
+				cout<<f1<<"-"<<f2<<" wrong threshold detected (-5)"<<endl;
+		}
+	}
+
+}
+
+int main(){
 	srand (time(NULL));
 	float a1=1+rand()%10, b1=-50+rand()%100;
 	float a2=1+rand()%20 , b2=-50+rand()%100;
+
+
 	// test the learned model: (40 points)
 	// expected correlations:
 	//	A-C: y=a1*x+b1
@@ -32,41 +73,15 @@ int main() {
 
 	generateTrainCSV(a1,b1,a2,b2);
 	TimeSeries ts("trainFile1.csv");
-	int n = ts.get_num_of_rows();
-	float v1[n];
-	float v2[n];
-	float v3[n];
-	float v4[n];
-	ts.fill_col("Time", v1);
-	ts.fill_col("Altitude", v2);
-	ts.fill_col("Air speed", v3);
-	ts.fill_col("Heading", v4);
-	for (int j =0; j<n; j++) {
-		cout << v1[j] << ",";
-	}
-	cout << endl;
-	for (int j =0; j<n; j++) {
-		cout << v2[j] << ",";
-	}
-	cout << endl;
-	for (int j =0; j<n; j++) {
-		cout << v3[j] << ",";
-	}
-	cout << endl;
-	for (int j =0; j<n; j++) {
-		cout << v4[j] << ",";
-	}
-	cout << endl;
-	vector<const float*> vk;
-	for (int i=0; i< n; i++) {
-		vk.push_back(ts.get_row(i));
-	}
-	for (int i=0; i< n; i++) {
-		for (int j=0; j< ts.getFeatures().size(); j++) {
-			cout << (vk[i])[j] << ",";
-		}
-		cout << endl;
-	} 
-
-
+    SimpleAnomalyDetector ad;
+	ad.learnNormal(ts);
+	vector<correlatedFeatures> cf=ad.getNormalModel();
+	if(cf.size()!=2)
+		cout<<"wrong size of correlated features (-40)"<<endl;
+	else
+	for_each(cf.begin(),cf.end(),[&a1,&b1,&a2,&b2](correlatedFeatures c){
+		checkCorrelationTrain(c,"A","C",a1,b1); // 20 points
+		checkCorrelationTrain(c,"B","D",a2,b2); // 20 points
+	});
+	
 }

@@ -8,7 +8,7 @@
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include <math.h>
-#include "TimeSeries.h"
+#include "timeseries.h"
 using namespace std;
 
 // this is a simple test to put you on the right track

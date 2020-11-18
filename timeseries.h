@@ -104,6 +104,7 @@ public:
      * @return float 
      */
     float get_value_of_feature_at_specified_time(const string& feature,int time) const;
+	
 	/**
 	 * @brief Destroy the Time Series object
 	 * 

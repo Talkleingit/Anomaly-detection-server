@@ -2,7 +2,7 @@
 #include "AnomalyDetector.h"
 #include <vector>
 #include "anomaly_detection_util.h"
-#include "TimeSeries.h"
+#include "timeseries.h"
 SimpleAnomalyDetector::SimpleAnomalyDetector(){};
 
 SimpleAnomalyDetector::~SimpleAnomalyDetector() {

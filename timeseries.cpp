@@ -1,4 +1,4 @@
-#include "TimeSeries.h"
+#include "timeseries.h"
 #include <iostream>
 #include <cstring>
 #include <fstream>

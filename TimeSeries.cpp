@@ -106,5 +106,8 @@ float TimeSeries::get_value_of_feature_at_specified_time(const string& feature,i
 }
 
 TimeSeries::~TimeSeries() {
+    for (int i=0; i<TimeSeries::get_num_of_features(); i++) {
+        delete[] TimeSeries::m_dataTable[i];    //free allocated column for each feature in the csv file.
+    }
     TimeSeries::m_fs.close();
 }

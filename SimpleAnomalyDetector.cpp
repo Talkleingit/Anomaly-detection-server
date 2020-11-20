@@ -65,7 +65,7 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts) {
 		int feat_1_index = ts.get_index_of_feature(featr1_str);    //find index of feature 1 in the time series 
 		int feat_2_index = ts.get_index_of_feature(featr2_str);    //find index of feature 2 in the time series 
 		float* f1 = ts.get_col_by_index(feat_1_index);    //get the feature1 (column-data) by index
-		float* f2 = ts.get_col_by_index(feat_2_index);    //get the feature1 (column-data) by index
+		float* f2 = ts.get_col_by_index(feat_2_index);    //get the feature2 (column-data) by index
 		for (int j=0; j<feature_size; j++) {
 			float x = f1[j];
 			float y = f2[j];

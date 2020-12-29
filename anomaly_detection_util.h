@@ -25,6 +25,8 @@ public:
 	}
 };
 
+
+
 class Point{
 public:
 	const float x,y;

@@ -75,6 +75,7 @@ int main(){
 	TimeSeries ts("trainFile1.csv");
     SimpleAnomalyDetector ad;
 	ad.learnNormal(ts);
+	
 	vector<correlatedFeatures> cf=ad.getNormalModel();
 	if(cf.size()!=2)
 		cout<<"wrong size of correlated features (-40)"<<endl;

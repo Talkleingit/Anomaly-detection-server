@@ -3,7 +3,11 @@
 #include "minCircle.h"
 HybridAnomalyDetector::HybridAnomalyDetector(){};
 HybridAnomalyDetector::~HybridAnomalyDetector(){};
-
+/**
+ * @brief Updates the member cf according to the minimum circle algorithm
+ * 
+ * @param ts 
+ */
 void HybridAnomalyDetector::learnNormal(const TimeSeries &ts)
 {
 	SimpleAnomalyDetector::learnNormal(ts); // calculate all

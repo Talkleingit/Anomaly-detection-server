@@ -13,13 +13,20 @@
 
 class HybridAnomalyDetector : public SimpleAnomalyDetector
 {
-	vector<correlatedFeatures> cf1;
+	//	vector<correlatedFeatures> cf1;
 
 public:
 	HybridAnomalyDetector();
 	virtual ~HybridAnomalyDetector();
+	virtual void setMaxThreshold(float thresh)
+	{
+		SimpleAnomalyDetector::max_thresh = thresh;
+	}
+	virtual float getMaxThreshold()
+	{
+		return SimpleAnomalyDetector::max_thresh;
+	}
 	void learnNormal(const TimeSeries &ts);
-	//	vector<AnomalyReport> detect(const TimeSeries &ts);
 };
 
 #endif /* HYBRIDANOMALYDETECTOR_H_ */

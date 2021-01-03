@@ -56,8 +56,8 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries &ts)
         correlatedFeatures info;
         float *fi = ts.get_col_by_index(i);
         float *fj = ts.get_col_by_index(j);
-        info.corrlation = std::abs(pearson(fi, fj, feature_size));                    // calculate correlation between features fi and fj
-        if (info.corrlation >= 0.9 || info.corrlation > 0.5 && info.corrlation < 0.9) // verifying if the abs correlation of the two features is in fact correlative (over or equal to 0.9)
+        info.corrlation = std::abs(pearson(fi, fj, feature_size));                                                                                // calculate correlation between features fi and fj
+        if (info.corrlation >= SimpleAnomalyDetector::max_thresh || info.corrlation > 0.5 && info.corrlation < SimpleAnomalyDetector::max_thresh) // verifying if the abs correlation of the two features is in fact correlative (over or equal to 0.9)
         {
           const string featurei = (ts.get_features())[i]; // save first feature by name
           const string featurej = (ts.get_features())[j]; // save second feature by name

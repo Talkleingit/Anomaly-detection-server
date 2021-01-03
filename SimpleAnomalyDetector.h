@@ -24,11 +24,11 @@ class SimpleAnomalyDetector : public TimeSeriesAnomalyDetector
 {
 protected:
 	vector<correlatedFeatures> cf;
+	float max_thresh = 0.9;
 
 public:
 	SimpleAnomalyDetector();
 	virtual ~SimpleAnomalyDetector();
-
 	virtual void learnNormal(const TimeSeries &ts);
 	virtual vector<AnomalyReport> detect(const TimeSeries &ts);
 	vector<correlatedFeatures> getNormalModel()

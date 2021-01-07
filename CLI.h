@@ -11,7 +11,6 @@ using namespace std;
 class CLI
 {
 	DefaultIO *dio;
-	vector<Command> commands;
 
 public:
 	CLI(DefaultIO *dio);

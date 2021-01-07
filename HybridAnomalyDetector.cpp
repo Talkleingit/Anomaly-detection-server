@@ -1,7 +1,7 @@
 
 #include "HybridAnomalyDetector.h"
 #include "minCircle.h"
-HybridAnomalyDetector::HybridAnomalyDetector(){};
+HybridAnomalyDetector::HybridAnomalyDetector() : SimpleAnomalyDetector(){};
 HybridAnomalyDetector::~HybridAnomalyDetector(){};
 /**
  * @brief Updates the member cf according to the minimum circle algorithm
@@ -36,6 +36,10 @@ void HybridAnomalyDetector::learnNormal(const TimeSeries &ts)
 		SimpleAnomalyDetector::cf[i].is_hybrid = true;							// this was updated in derived class
 
 		//free space
-		delete[] points;
+		for (int j = 0; j < feature_size; j++)
+		{
+			delete points[j];
+		}
+		delete points;
 	}
 }

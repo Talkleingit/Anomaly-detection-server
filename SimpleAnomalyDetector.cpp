@@ -156,6 +156,7 @@ vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries &ts)
       float y = row[feature2_index];
       Point *point = new Point(x, y); // create a point that the x value is from feature1 and y value from feature2
       float deviation;
+
       if (SimpleAnomalyDetector::cf[i].is_hybrid == true)
       {
         deviation = dist(*point, *SimpleAnomalyDetector::cf[i].center);

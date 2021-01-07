@@ -1,5 +1,3 @@
-
-
 #ifndef COMMANDS_H_
 #define COMMANDS_H_
 #include <iostream>
@@ -26,54 +24,91 @@ public:
 // you may add here helper classes
 
 // you may edit this class
+
+struct NeededAttributes
+{
+    HybridAnomalyDetector *detector;
+    vector<AnomalyReport> *reports;
+    string train_file = "train.csv";
+    string test_file = "test.csv";
+    int ts_length;
+};
+
+struct TimeFrame
+{
+    long start;
+    long end;
+};
+
+class InfoForCommands
+{
+
+public:
+    NeededAttributes *attributes;
+    InfoForCommands(NeededAttributes *attr)
+    {
+        this->attributes = attr;
+    }
+    ~InfoForCommands() {}
+};
 class Command
 {
 
 protected:
     DefaultIO *dio;
-    HybridAnomalyDetector *detector;
-    vector<AnomalyReport> reports;
-    string train_file = "train.csv";
-    string test_file = "test.csv";
+    InfoForCommands *info;
 
 public:
-    Command(DefaultIO *dio) : dio(dio) {}
+    Command(DefaultIO *dio, InfoForCommands *info) : dio(dio), info(info)
+    {
+    }
     virtual void execute() = 0;
     virtual void printDescription() = 0;
-    virtual ~Command() {}
+    virtual ~Command()
+    {
+    }
 };
-
-// implement here your command classes
 
 class UpdloadCommand : public Command
 {
     string description = "1.upload a time series csv file\n";
 
 public:
-    UpdloadCommand(DefaultIO *io) : Command(io) {}
+    UpdloadCommand(DefaultIO *io, InfoForCommands *info) : Command(io, info) {}
     virtual void execute()
     {
         string str;
-        Command::dio->write("Please upload your local train csv file.\n");
-        ofstream out(Command::train_file);
-        ofstream out2(Command::test_file);
+        Command::dio->write("Please upload your local train CSV file.");
+        Command::dio->write("\n");
+        ofstream out(Command::info->attributes->train_file);
+        ofstream out2(Command::info->attributes->test_file);
         do
         {
             str = Command::dio->read();
-            out << str;
+            if (str.compare("done") != 0)
+            {
+                out << str;
+                out << "\n";
+            }
         } while (str.compare("done") != 0);
         out.close();
-        Command::dio->write("Upload complete.\n");
-        Command::dio->write("Please upload your local test csv file.\n");
+        Command::dio->write("Upload complete.");
+        Command::dio->write("\n");
+        Command::dio->write("Please upload your local test CSV file.");
+        Command::dio->write("\n");
         do
         {
             str = Command::dio->read();
-            out2 << str;
+            if (str.compare("done") != 0)
+            {
+                out2 << str;
+                out2 << "\n";
+            }
+
         } while (str.compare("done") != 0);
         out2.close();
-        Command::dio->write("Upload complete.\n");
-        out2.close();
-        Command::dio->write("Upload complete.\n");
+        Command::dio->write("Upload complete.");
+        Command::dio->write("\n");
     }
     /**
 	 * @brief prints the menu option - upload a time series
@@ -89,26 +124,39 @@ public:
 
 class AlgorithmSettingsCommand : public Command
 {
-    string description = "2.algorithm settings\n";
+    string description = "2.algorithm settings";
 
 public:
-    AlgorithmSettingsCommand(DefaultIO *io) : Command(io) {}
+    AlgorithmSettingsCommand(DefaultIO *io, InfoForCommands *info) : Command(io, info) {}
     virtual void execute()
     {
-        float *updated_threshold;
+        float *updated_threshold = new float;
+        bool not_in_range = false;
         // input of new threshold (try until given a value between 0 and 1)
+        // need to changed implementation
         do
         {
+            //problem is hereeeeeee
             Command::dio->write("The current correlation threshold is ");
-            Command::dio->write(Command::detector->getMaxThreshold());
+            Command::dio->write(Command::info->attributes->detector->getMaxThreshold());
+            Command::dio->write("\n");
+            Command::dio->write("Type a new threshold");
             Command::dio->write("\n");
             Command::dio->read(updated_threshold);
-        } while (*updated_threshold < 0 || *updated_threshold > 1);
-        Command::detector->setMaxThreshold(*updated_threshold); //update new threshold
+            not_in_range = *updated_threshold < 0 || *updated_threshold > 1;
+            if (not_in_range)
+            {
+                Command::dio->write("please choose a value between 0 and 1.\n");
+                //        Command::dio->read(); //wait for enter
+            }
+        } while (not_in_range);
+        Command::info->attributes->detector->setMaxThreshold(*updated_threshold); //update new threshold
+        delete updated_threshold;
     }
     virtual void printDescription() override
     {
         Command::dio->write(this->description);
+        Command::dio->write("\n");
     }
     virtual ~AlgorithmSettingsCommand() {}
 };
@@ -118,19 +166,20 @@ class DetectAnomaliesCommand : public Command
     string description = "3.detect anomalies\n";
 
 public:
-    DetectAnomaliesCommand(DefaultIO *io) : Command(io) {}
+    DetectAnomaliesCommand(DefaultIO *io, InfoForCommands *info) : Command(io, info) {}
     virtual void execute()
     {
-        int n = Command::train_file.length();
-        int m = Command::test_file.length();
+        int n = Command::info->attributes->train_file.length();
+        int m = Command::info->attributes->test_file.length();
         char train_f[n + 1];
         char test_f[m + 1];
-        strcpy(train_f, Command::train_file.c_str());
-        strcpy(test_f, Command::test_file.c_str());
+        strcpy(train_f, Command::info->attributes->train_file.c_str());
+        strcpy(test_f, Command::info->attributes->test_file.c_str());
         TimeSeries ts_train(train_f); // create a time series
         TimeSeries ts_test(test_f);
-        Command::detector->learnNormal(ts_train);              // learn the data from the training file.
-        Command::reports = Command::detector->detect(ts_test); //save anomaly reports.
+        Command::info->attributes->ts_length = ts_test.get_num_of_rows();
+        Command::info->attributes->detector->learnNormal(ts_train);                                   // learn the data from the training file.
+        *(Command::info->attributes->reports) = Command::info->attributes->detector->detect(ts_test); //save anomaly reports.
         Command::dio->write("anomaly detection complete.\n");
     }
     virtual void printDescription()
@@ -142,20 +191,21 @@ public:
 
 class DisplayResultsCommand : public Command
 {
-    string description = "4.display results";
+    string description = "4.display results\n";
 
 public:
-    DisplayResultsCommand(DefaultIO *io) : Command(io) {}
+    DisplayResultsCommand(DefaultIO *io, InfoForCommands *info) : Command(io, info) {}
     void execute() override
     {
-        for (AnomalyReport report : Command::reports)
+        vector<AnomalyReport> reports = *Command::info->attributes->reports;
+        for (AnomalyReport report : reports)
         {
             Command::dio->write(report.timeStep);
-            Command::dio->write("  ");
+            Command::dio->write("\t");
             Command::dio->write(report.description);
             Command::dio->write("\n");
         }
-        Command::dio->write("Done");
+        Command::dio->write("Done.\n");
     }
     void printDescription() override
     {
@@ -166,34 +216,160 @@ public:
 
 class AnalyzeCommand : public Command
 {
-    string description = "5.upload anomalies and analyze results";
+    string description = "5.upload anomalies and analyze results\n";
 
 public:
-    AnalyzeCommand(DefaultIO *io) : Command(io) {}
+    AnalyzeCommand(DefaultIO *io, InfoForCommands *info) : Command(io, info) {}
     void execute() override
     {
+        string str, str_time, str_end_time;
+        vector<AnomalyReport> reports = *(Command::info->attributes->reports);
+        int size = reports.size();
+        double FP = 0, TP = 0, TN = 0, FN = 0;
+        long start_time, end_time;
+        int P = 0;
+        int n = Command::info->attributes->ts_length;
+        int N = n; // start the negative parameter with the number of lines in the csv file
+        bool found = false, found_tp = false;
+        size_t current = reports[0].timeStep;
+        vector<TimeFrame> timeframes;
+        vector<TimeFrame> clientTimeFrames;
+        Command::dio->write("Please upload your local anomalies file.\n");
+        Command::dio->write("Upload complete.\n");
+        str = Command::dio->read();
+        for (int i = 1; i < size; i++)
+        {
+            if ((i == size - 1) && (reports[i].description.compare(reports[i - 1].description) == 0 && reports[i].timeStep - 1 == reports[i - 1].timeStep))
+            {
+                TimeFrame timeframe;
+                timeframe.start = current;
+                timeframe.end = reports[i].timeStep;
+                timeframes.push_back(timeframe);
+                current = reports[i].timeStep;
+            }
+            if (reports[i].description.compare(reports[i - 1].description) != 0 || reports[i].timeStep - 1 != reports[i - 1].timeStep)
+            {
+                TimeFrame timeframe;
+                timeframe.start = current;
+                timeframe.end = reports[i - 1].timeStep;
+                timeframes.push_back(timeframe);
+                current = reports[i].timeStep;
+            }
+        }
+        while (str.compare("done") != 0)
+        {
+            size_t end_pos = str.find(",");
+            str_time = str.substr(0, end_pos);
+            stringstream ss(str_time);
+            ss >> start_time;
+            str_end_time = str.substr(end_pos + 1);
+            stringstream ss2(str_end_time);
+            ss2 >> end_time;
+            current = 1;
+            TimeFrame tf;
+            tf.start = start_time;
+            tf.end = end_time;
+            clientTimeFrames.push_back(tf);
+            //update number of
+            P++;
+            N -= (end_time - start_time + 1); //update the number of negative lines
+            str = Command::dio->read();       // read for the next iteration
+        }
+        bool f = false;
+        for (TimeFrame st : timeframes)
+        {
+            f = false;
+            for (TimeFrame ct : clientTimeFrames)
+            {
+                if ((st.start >= ct.start) && (st.end <= ct.end))
+                {
+                    TP = TP + 1;
+                    f = true;
+                }
+                else if ((st.start <= ct.start) && ((st.end < ct.end) && (st.end >= ct.start)))
+                {
+                    TP = TP + 1;
+                    f = true;
+                }
+                else if (((st.start >= ct.start) && (st.start <= ct.end)) && (st.end >= ct.end))
+                {
+                    TP = TP + 1;
+                    f = true;
+                }
+                else if ((st.start < ct.start) && (st.end > ct.end))
+                {
+                    TP = TP + 1;
+                    f = true;
+                }
+            }
+            if (f == false)
+            {
+                FP = FP + 1;
+            }
+        }
+        // calculate rates:
+        float true_positive_rate = TP / P;
+        true_positive_rate = floor(true_positive_rate * 1000) / 1000.0;
+        float false_positive_rate = FP / N;
+        false_positive_rate = floor(false_positive_rate * 1000) / 1000.0;
+        Command::dio->write("True Positive Rate: ");
+        Command::dio->write(true_positive_rate);
+        Command::dio->write("\n");
+        Command::dio->write("False Positive Rate: ");
+        Command::dio->write(false_positive_rate);
+        Command::dio->write("\n");
     }
+
     void printDescription() override
     {
         Command::dio->write(this->description);
     }
     ~AnalyzeCommand() {}
-}
+};
+
+class ExitCommand : public Command
+{
+    string description = "6.exit\n";
+
+public:
+    ExitCommand(DefaultIO *io, InfoForCommands *info) : Command(io, info) {}
+    void execute()
+    {
+        return;
+    }
+    void printDescription()
+    {
+        Command::dio->write(this->description);
+    }
+    ~ExitCommand() {}
+};
 
 class MenuCommand : public Command
 {
     vector<Command *> commands;
 
 public:
-    MenuCommand(DefaultIO *io) : Command(io) {}
+    MenuCommand(DefaultIO *io, InfoForCommands *info) : Command(io, info) {}
     void createMenu()
     {
-        Command *uc = new UpdloadCommand(Command::dio);
-        this->add(uc);
-        Command *asc = new AlgorithmSettingsCommand(Command::dio);
-        this->add(asc);
-        Command *dac = new DetectAnomaliesCommand(Command::dio);
-        this->add(dac);
+        //command 1
+        Command *c1 = new UpdloadCommand(Command::dio, Command::info);
+        this->add(c1);
+        //command 2
+        Command *c2 = new AlgorithmSettingsCommand(Command::dio, Command::info);
+        this->add(c2);
+        //command 3
+        Command *c3 = new DetectAnomaliesCommand(Command::dio, Command::info);
+        this->add(c3);
+        //command 4
+        Command *c4 = new DisplayResultsCommand(Command::dio, Command::info);
+        this->add(c4);
+        //command 5
+        Command *c5 = new AnalyzeCommand(Command::dio, Command::info);
+        this->add(c5);
+        //command 6
+        Command *c6 = new ExitCommand(Command::dio, Command::info);
+        this->add(c6);
     }
     void executeGivenCommand(int i)
     {
@@ -216,12 +392,10 @@ public:
     }
     void printDescription() override
     {
-        if (this->commands.size() == 0)
-        {
-            createMenu();
-        }
-        Command::dio->write("Welcome to the Anomaly Detection Server.\n");
-        Command::dio->write("Please choose an option:\n");
+        Command::dio->write("Welcome to the Anomaly Detection Server.");
+        Command::dio->write("\n");
+        Command::dio->write("Please choose an option:");
+        Command::dio->write("\n");
         for (Command *c : this->commands)
         {
             c->printDescription();
@@ -235,5 +409,4 @@ public:
         }
     }
 };
-
 #endif /* COMMANDS_H_ */

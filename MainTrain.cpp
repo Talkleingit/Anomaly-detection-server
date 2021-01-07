@@ -68,7 +68,6 @@ void check(string outputFile, string expectedOutputFile)
 	{
 		getline(st, lst);
 		getline(ex, lex);
-		cout << lex << endl;
 		if (i < 13 && lst.compare(lex) != 0)
 		{ // 12
 			cout << "line " << i << " expected: " << lex << " you got " << lst << endl;
@@ -76,10 +75,8 @@ void check(string outputFile, string expectedOutputFile)
 		}
 		else if (j < 11 && i == chk[j])
 		{
-
 			if (lst.compare(lex) != 0)
 			{ // 88
-
 				cout << "line " << i << " expected: " << lex << " you got " << lst << endl;
 				cout << "wrong output (-8)" << endl;
 			}
@@ -98,7 +95,6 @@ int main()
 {
 	STDtest std("input.txt", "output.txt");
 	CLI cli(&std);
-
 	cli.start();
 	std.close();
 	check("output.txt", "expectedOutput.txt");

@@ -17,8 +17,8 @@ void CLI::start()
     NeededAttributes needed;
     needed.detector = detector;
     needed.reports = reports_p;
-    InfoForCommands *info = new InfoForCommands(&needed);
-    MenuCommand *menu = new MenuCommand(CLI::dio, info);
+    info = new InfoForCommands(&needed);
+    menu = new MenuCommand(CLI::dio, info);
     menu->createMenu();
     menu->printDescription();
     bool found = false;
@@ -61,10 +61,10 @@ void CLI::start()
     }
     delete reports_p;
     delete detector;
-    delete info;
-    delete menu;
 }
 
 CLI::~CLI()
 {
+    delete menu;
+    delete info;
 }

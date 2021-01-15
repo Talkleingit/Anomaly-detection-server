@@ -1,0 +1,50 @@
+//  bzero(buff, READING_BUFFER_SIZE);
+int i = ::read(this->m_clientid, buff, sizeof(buff) - 1);
+if (i <= 0)
+{
+    exit(1);
+}
+buff[i] = '\0';
+string str(buff);
+return str;
+
+/*
+        int i;
+        while ((i = ::read(this->m_clientid, buff, sizeof(buff) - 1)) > 0)
+        {
+            buff[i] = '\0';
+            cout << buff;
+        }
+       string str(buff);
+        return str;
+        */
+//     char buff[READING_BUFFER_SIZE];
+//        bzero(buff, READING_BUFFER_SIZE);
+// bzero(this->m_buffer, READING_BUFFER_SIZE);
+//     memset(this->m_buffer, '/0', READING_BUFFER_SIZE);
+/*
+        if ((m_bytesread = ::read(this->m_clientid, this->m_buffer, READING_BUFFER_SIZE)) <= 0)
+        {
+            throw std::system_error(errno, std::generic_category(), "Error reading");
+        }
+        */
+/*
+        if ((this->m_bytesread = ::read(this->m_clientid, this->m_buffer, READING_BUFFER_SIZE)) < 0)
+        {
+            throw std::system_error(errno, std::generic_category(), "Error reading");
+        }
+        int count = 0;
+        //    string str;
+        string str(this->m_buffer);
+        */
+//   cout << str;
+/*
+        string d("done");
+        if (str.find(d) != std::string::npos)
+        {
+            return d;
+        }
+*/
+
+///    cout << str;
+//   return str;

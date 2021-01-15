@@ -11,6 +11,8 @@ using namespace std;
 class CLI
 {
 	DefaultIO *dio;
+	MenuCommand *menu;
+	InfoForCommands *info;
 
 public:
 	CLI(DefaultIO *dio);

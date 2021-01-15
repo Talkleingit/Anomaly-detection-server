@@ -6,7 +6,11 @@
 #include <vector>
 #include "HybridAnomalyDetector.h"
 #include "timeseries.h"
-
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#define READING_BUFFER_SIZE 80
 using namespace std;
 
 class DefaultIO
@@ -19,6 +23,90 @@ public:
     virtual ~DefaultIO() {}
 
     // you may add additional methods here
+};
+
+/**
+ * @brief this is the socket io class that implements the DefaultIO interface
+ * 
+ */
+class SocketIo : public DefaultIO
+{
+    int m_clientid;
+    char m_buffer[READING_BUFFER_SIZE];
+    char *buf;
+    const char *m_datamsg;
+    int m_bytesread;
+    int m_bytessent = 0;
+    int m_totalsent = 0;
+
+public:
+    SocketIo(int clientid)
+    {
+        this->m_clientid = clientid;
+    }
+    virtual string read() throw(const char *) override
+    {
+        char buff[READING_BUFFER_SIZE];
+        //        bzero(buff, READING_BUFFER_SIZE);
+        //  bzero(buff, READING_BUFFER_SIZE);
+        memset(buff, 0, READING_BUFFER_SIZE);
+
+        if ((m_bytesread = ::read(this->m_clientid, buff, READING_BUFFER_SIZE - 1)) <= 0)
+        {
+            throw std::system_error(errno, std::generic_category(), "Error reading");
+        }
+
+        //    m_buffer[m_bytesread] = '\0';
+        string str(buff);
+        cout << str;
+        return str;
+    }
+    virtual void read(float *f)
+    {
+
+        bzero(this->m_buffer, READING_BUFFER_SIZE);
+        if ((this->m_bytesread = ::read(this->m_clientid, this->m_buffer, READING_BUFFER_SIZE)) <= 0)
+        {
+            throw std::system_error(errno, std::generic_category(), "Error reading");
+        }
+
+        std::string tmpstr(this->m_buffer);
+        *f = std::stof(tmpstr);
+    }
+    virtual void write(string text) throw(const char *)
+    {
+        int text_length = text.size();
+        //   const char *datamsg = text.c_str();
+        //   this->m_datamsg = text.c_str();
+        const char *msg = text.c_str();
+        if ((this->m_bytessent = ::write(this->m_clientid, msg, text_length)) <= 0)
+        {
+            throw std::system_error(errno, std::generic_category(), "Error sending");
+        }
+    }
+    virtual void write(float f) throw(const char *)
+    {
+        std::stringstream sstream;
+        sstream << f;
+        string str = sstream.str();
+        int n = str.size();
+        this->m_datamsg = str.c_str(); // conver to char *
+        // const char *msg = str.c_str();
+        if ((this->m_bytessent = ::write(this->m_clientid, this->m_datamsg, n)) < 0)
+        {
+            throw std::system_error(errno, std::generic_category(), "Error sending");
+        }
+        this->m_bytessent = 0;
+        /*
+        while (this->m_totalsent < n)
+        {
+
+            this->m_totalsent += this->m_bytessent;
+        }
+        */
+    }
+
+    ~SocketIo() {}
 };
 
 // you may add here helper classes
@@ -71,38 +159,38 @@ public:
 
 class UpdloadCommand : public Command
 {
-    string description = "1.upload a time series csv file\n";
+    string description = "1.upload a time series csv file";
 
 public:
     UpdloadCommand(DefaultIO *io, InfoForCommands *info) : Command(io, info) {}
     virtual void execute()
     {
         string str;
-        Command::dio->write("Please upload your local train CSV file.");
-        Command::dio->write("\n");
+        Command::dio->write("Please upload your local train CSV file.\n");
         ofstream out(Command::info->attributes->train_file);
         ofstream out2(Command::info->attributes->test_file);
         do
         {
             str = Command::dio->read();
+
             if (str.compare("done") != 0)
             {
                 out << str;
-                out << "\n";
             }
+
         } while (str.compare("done") != 0);
+        cout << str;
         out.close();
-        Command::dio->write("Upload complete.");
-        Command::dio->write("\n");
-        Command::dio->write("Please upload your local test CSV file.");
-        Command::dio->write("\n");
+        cout << str;
+        Command::dio->write("Upload complete.\n");
+        Command::dio->write("Please upload your local test CSV file.\n");
         do
         {
             str = Command::dio->read();
             if (str.compare("done") != 0)
             {
                 out2 << str;
-                out2 << "\n";
+                //    out2 << "\n";
             }
 
         } while (str.compare("done") != 0);
@@ -118,6 +206,7 @@ public:
     {
 
         Command::dio->write(this->description);
+        Command::dio->write("\n");
     }
     virtual ~UpdloadCommand() {}
 };
@@ -136,7 +225,6 @@ public:
         // need to changed implementation
         do
         {
-            //problem is hereeeeeee
             Command::dio->write("The current correlation threshold is ");
             Command::dio->write(Command::info->attributes->detector->getMaxThreshold());
             Command::dio->write("\n");
@@ -146,8 +234,8 @@ public:
             not_in_range = *updated_threshold < 0 || *updated_threshold > 1;
             if (not_in_range)
             {
-                Command::dio->write("please choose a value between 0 and 1.\n");
-                //        Command::dio->read(); //wait for enter
+                Command::dio->write("please choose a value between 0 and 1.");
+                Command::dio->write("\n");
             }
         } while (not_in_range);
         Command::info->attributes->detector->setMaxThreshold(*updated_threshold); //update new threshold
@@ -163,7 +251,7 @@ public:
 
 class DetectAnomaliesCommand : public Command
 {
-    string description = "3.detect anomalies\n";
+    string description = "3.detect anomalies";
 
 public:
     DetectAnomaliesCommand(DefaultIO *io, InfoForCommands *info) : Command(io, info) {}
@@ -185,13 +273,14 @@ public:
     virtual void printDescription()
     {
         Command::dio->write(this->description);
+        Command::dio->write("\n");
     }
     virtual ~DetectAnomaliesCommand() {}
 };
 
 class DisplayResultsCommand : public Command
 {
-    string description = "4.display results\n";
+    string description = "4.display results";
 
 public:
     DisplayResultsCommand(DefaultIO *io, InfoForCommands *info) : Command(io, info) {}
@@ -210,13 +299,14 @@ public:
     void printDescription() override
     {
         Command::dio->write(this->description);
+        Command::dio->write("\n");
     }
     ~DisplayResultsCommand() {}
 };
 
 class AnalyzeCommand : public Command
 {
-    string description = "5.upload anomalies and analyze results\n";
+    string description = "5.upload anomalies and analyze results";
 
 public:
     AnalyzeCommand(DefaultIO *io, InfoForCommands *info) : Command(io, info) {}
@@ -237,6 +327,7 @@ public:
         Command::dio->write("Please upload your local anomalies file.\n");
         Command::dio->write("Upload complete.\n");
         str = Command::dio->read();
+        //create time frames according to the times found by the anomaly detector
         for (int i = 1; i < size; i++)
         {
             if ((i == size - 1) && (reports[i].description.compare(reports[i - 1].description) == 0 && reports[i].timeStep - 1 == reports[i - 1].timeStep))
@@ -323,13 +414,14 @@ public:
     void printDescription() override
     {
         Command::dio->write(this->description);
+        Command::dio->write("\n");
     }
     ~AnalyzeCommand() {}
 };
 
 class ExitCommand : public Command
 {
-    string description = "6.exit\n";
+    string description = "6.exit";
 
 public:
     ExitCommand(DefaultIO *io, InfoForCommands *info) : Command(io, info) {}
@@ -340,6 +432,7 @@ public:
     void printDescription()
     {
         Command::dio->write(this->description);
+        Command::dio->write("\n");
     }
     ~ExitCommand() {}
 };
@@ -400,9 +493,11 @@ public:
         {
             c->printDescription();
         }
+        int x;
     }
     virtual ~MenuCommand()
     {
+
         for (Command *c : commands)
         {
             delete c;

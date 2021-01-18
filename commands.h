@@ -10,7 +10,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#define READING_BUFFER_SIZE 80
+#include <thread>
+#define READING_BUFFER_SIZE 1
 using namespace std;
 
 class DefaultIO
@@ -46,40 +47,32 @@ public:
     }
     virtual string read() throw(const char *) override
     {
-        char buff[READING_BUFFER_SIZE];
-        //        bzero(buff, READING_BUFFER_SIZE);
-        //  bzero(buff, READING_BUFFER_SIZE);
-        memset(buff, 0, READING_BUFFER_SIZE);
-
-        if ((m_bytesread = ::read(this->m_clientid, buff, READING_BUFFER_SIZE - 1)) <= 0)
+        string str;
+        int n = ::read(m_clientid, m_buffer, sizeof(m_buffer));
+        while (m_buffer[0] != '\n')
         {
-            throw std::system_error(errno, std::generic_category(), "Error reading");
+            str += m_buffer[0];
+            ::read(m_clientid, m_buffer, sizeof(m_buffer));
         }
-
-        //    m_buffer[m_bytesread] = '\0';
-        string str(buff);
-        cout << str;
         return str;
     }
     virtual void read(float *f)
     {
-
-        bzero(this->m_buffer, READING_BUFFER_SIZE);
-        if ((this->m_bytesread = ::read(this->m_clientid, this->m_buffer, READING_BUFFER_SIZE)) <= 0)
+        char buf[4];
+        if ((this->m_bytesread = ::read(this->m_clientid, buf, 4)) <= 0)
         {
             throw std::system_error(errno, std::generic_category(), "Error reading");
         }
 
-        std::string tmpstr(this->m_buffer);
+        std::string tmpstr(buf);
         *f = std::stof(tmpstr);
     }
     virtual void write(string text) throw(const char *)
     {
+
         int text_length = text.size();
-        //   const char *datamsg = text.c_str();
-        //   this->m_datamsg = text.c_str();
         const char *msg = text.c_str();
-        if ((this->m_bytessent = ::write(this->m_clientid, msg, text_length)) <= 0)
+        if ((this->m_bytessent = ::send(this->m_clientid, msg, text_length, 0)) <= 0)
         {
             throw std::system_error(errno, std::generic_category(), "Error sending");
         }
@@ -89,21 +82,13 @@ public:
         std::stringstream sstream;
         sstream << f;
         string str = sstream.str();
+
         int n = str.size();
         this->m_datamsg = str.c_str(); // conver to char *
-        // const char *msg = str.c_str();
         if ((this->m_bytessent = ::write(this->m_clientid, this->m_datamsg, n)) < 0)
         {
             throw std::system_error(errno, std::generic_category(), "Error sending");
         }
-        this->m_bytessent = 0;
-        /*
-        while (this->m_totalsent < n)
-        {
-
-            this->m_totalsent += this->m_bytessent;
-        }
-        */
     }
 
     ~SocketIo() {}
@@ -169,31 +154,35 @@ public:
         Command::dio->write("Please upload your local train CSV file.\n");
         ofstream out(Command::info->attributes->train_file);
         ofstream out2(Command::info->attributes->test_file);
-        do
+        str = Command::dio->read();
+        while (str != "done")
         {
+            out << str;
+            out << "\n";
             str = Command::dio->read();
-
-            if (str.compare("done") != 0)
-            {
-                out << str;
-            }
-
-        } while (str.compare("done") != 0);
-        cout << str;
+        }
         out.close();
-        cout << str;
         Command::dio->write("Upload complete.\n");
         Command::dio->write("Please upload your local test CSV file.\n");
+        str = Command::dio->read();
+        while (str != "done")
+        {
+            out2 << str;
+            out2 << "\n";
+            str = Command::dio->read();
+        }
+        /*
         do
         {
             str = Command::dio->read();
             if (str.compare("done") != 0)
             {
                 out2 << str;
-                //    out2 << "\n";
+                out2 << "\n";
             }
 
         } while (str.compare("done") != 0);
+        */
         out2.close();
         Command::dio->write("Upload complete.");
         Command::dio->write("\n");
@@ -347,7 +336,7 @@ public:
                 current = reports[i].timeStep;
             }
         }
-        while (str.compare("done") != 0)
+        while (str != "done")
         {
             size_t end_pos = str.find(",");
             str_time = str.substr(0, end_pos);

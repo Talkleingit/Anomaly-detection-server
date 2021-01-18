@@ -3,7 +3,7 @@
 #include "sstream"
 #include "HybridAnomalyDetector.h"
 #include "timeseries.h"
-
+static int i = 0;
 CLI::CLI(DefaultIO *dio)
 {
     CLI::dio = dio;
@@ -25,6 +25,7 @@ void CLI::start()
     string s;
     while (true)
     {
+        i++;
         s = CLI::dio->read();
         stringstream ss(s);
         int option;
@@ -54,11 +55,13 @@ void CLI::start()
         }
         if (found)
         {
+
             break;
         }
 
         menu->printDescription();
     }
+
     delete reports_p;
     delete detector;
 }

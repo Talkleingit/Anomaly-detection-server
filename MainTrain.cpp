@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <time.h>
 #include "Server.h"
+#include <mutex>
 
 using namespace std;
 
@@ -143,6 +144,7 @@ void clientSide2(int port, string outputFile) throw(const char *)
 	out.close();
 
 	close(serverFD);
+
 	cout << "end of client 2" << endl;
 }
 
@@ -178,11 +180,15 @@ int main()
 
 	try
 	{
+		mutex lock;
 		AnomalyDetectionHandler adh;
 		Server server(port);
+
 		server.start(adh); // runs on its own thread
 		// let's run 2 clients
+
 		clientSide1(port, outputFile1);
+
 		clientSide2(port, outputFile2);
 		server.stop(); // joins the server's thread
 	}
@@ -197,5 +203,6 @@ int main()
 		cout << "you have " << mistakes << " mistakes in your output (-" << (mistakes * 2) << ")" << endl;
 
 	cout << "done" << endl;
+
 	return 0;
 }

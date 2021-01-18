@@ -39,11 +39,7 @@ return str;
         */
 //   cout << str;
 /*
-        string d("done");
-        if (str.find(d) != std::string::npos)
-        {
-            return d;
-        }
+        
 */
 
 ///    cout << str;

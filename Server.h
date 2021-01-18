@@ -13,6 +13,7 @@ using namespace std;
 #include <arpa/inet.h>
 #include <unistd.h>
 #include "CLI.h"
+
 // edit your ClientHandler interface here:
 class ClientHandler
 {
@@ -27,6 +28,7 @@ public:
 // edit your AnomalyDetectionHandler class here
 class AnomalyDetectionHandler : public ClientHandler
 {
+
 public:
 	virtual void handle(int clientID) const
 	{
@@ -42,6 +44,7 @@ class Server
 	thread *m_thread; // the thread to run the start() method in
 	sockaddr_in m_serverinfo;
 	sockaddr_in m_clientinfo;
+	mutex m_lock;
 	int m_fd;
 	int m_clientID;
 	volatile bool m_stop = false;

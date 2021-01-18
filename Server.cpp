@@ -1,6 +1,5 @@
 
 #include "Server.h"
-
 Server::Server(int port) throw(const char *)
 {
 
@@ -30,10 +29,9 @@ void Server::start(ClientHandler &ch) throw(const char *)
         while (!m_stop)
         {
 
-            alarm(2);
             socklen_t client_length = sizeof(m_clientinfo);
+            alarm(2);
             m_clientID = accept(m_fd, (struct sockaddr *)&m_clientinfo, &client_length);
-
             if (m_clientID < 0)
             {
                 throw std::system_error(errno, std::generic_category(), "Accept error");
@@ -43,7 +41,7 @@ void Server::start(ClientHandler &ch) throw(const char *)
             alarm(0);
             /*
             thread *t = new thread([this, &ch]() {
-
+                
             });
             */
             //   alarm(0);m
@@ -54,11 +52,12 @@ void Server::start(ClientHandler &ch) throw(const char *)
 
 void Server::stop()
 {
-
-    Server::m_thread->join(); // do not delete this!
     Server::m_stop = true;
+    Server::m_thread->join(); // do not delete this!
 }
 
 Server::~Server()
 {
 }
+//alarm(0);ch.handle(m_clientID);
+//   close(m_clientID);

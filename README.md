@@ -36,7 +36,7 @@ This project was written entirely in C++ and provides an anomaly detection serve
 
 
 ### Built With
-1.C++
+1. C++
 
 
 
@@ -52,7 +52,7 @@ To get a local copy up and running, follow these steps.
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/Talkleingit/Remote-Joystick.git
+   git clone https://github.com/Talkleingit/Anomaly-detection-server.git
    ```
 2. 
    

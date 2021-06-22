@@ -65,7 +65,7 @@ To get a local copy up and running, follow these steps.
  is responsible for collecting 2 csv files from the user, one for the learning phase and another for the matter of detection. The second command is responsible for setting the 
  detection algorithm, Simple (Linear regression) or Hybrid (Min encapsulating circle). The third command is responsible for the detection, meaning it runs an analysis on the 
  detection file uploaded by the user and verifies if all attributes correlate to the findings of the algorithm in the learnNormal stage. The fourth command displays 
- the algorithms results. The fifth command 
+ the algorithms results. The fifth command checks for FP and TP rates. The sixth command is responsible for stopping the connection.
 
 
 

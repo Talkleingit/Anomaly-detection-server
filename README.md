@@ -60,7 +60,8 @@ To get a local copy up and running, follow these steps.
 
 <!-- Features-and-Functionality -->
 ## Features and Functionality
- The server expects to receive from the user a CSV file with all features the user would like to test. The user specifies which algorithm he wishes the server to use. 
+ The server expects to receive from the user a CSV file with all features the user would like to test. The user specifies which algorithm he wishes the server to use
+ (Regression or Hybrid). Then the server commands the 
  
   
 

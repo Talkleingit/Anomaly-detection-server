@@ -29,7 +29,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-This project was written entirely in C++ and provides an anomaly detection server that uses 2 different algorithms in order to identify anomalies in given CSV files.
+This project was written entirely in C++ and provides an anomaly detection server that uses 2 different algorithms in order to identify anomalies in given csv files.
 
 
 

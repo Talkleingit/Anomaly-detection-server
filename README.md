@@ -63,10 +63,9 @@ To get a local copy up and running, follow these steps.
  The server expects to receive from the user a CSV file with all features the user would like to test. The user also specifies which algorithm he wishes the server to use
  (Regression or Hybrid). Then the server using a CLI component designed with the command behavioural design pattern executes the given commands by the user. The first command
  is responsible for collecting 2 csv files from the user, one for the learning phase and another for the matter of detection. The second command is responsible for setting the 
- detection algorithm, Simple (Linear regression) or Hybrid (Min encapsulating circle). The third command
-
-
-
+ detection algorithm, Simple (Linear regression) or Hybrid (Min encapsulating circle). The third command is responsible for the detection, meaning it runs an analysis on the 
+ detection file uploaded by the user and verifies if all attributes correlate to the findings of the algorithm in the learnNormal stage. The fourth command displays 
+ the algorithms results. The fifth command 
 
 
 

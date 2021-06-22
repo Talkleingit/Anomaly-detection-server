@@ -50,11 +50,6 @@ This project was written entirely in C++ and provides an anomaly detection serve
 
 To get a local copy up and running, follow these steps.
 
-### Prerequisites
-
-* Emulator
-* Flutter sdk - https://flutter.dev/docs/get-started/install
-* Flight gear simulator - https://www.flightgear.org/download/
 
 ### Installation
 
@@ -62,17 +57,7 @@ To get a local copy up and running, follow these steps.
    ```sh
    git clone https://github.com/Talkleingit/Remote-Joystick.git
    ```
-2. Run an android emulator
-3. Run the flight gear application, in the settings at the additional settings section insert:
-```sh  
---telnet=socket,in,10,127.0.0.1,6400,tcp 
-```
-4. Press the fly button in the flight gear application
-4. Run these commands in the terminal (in the project folder)
- ```sh
-   $ flutter packages get
-   $ flutter run --no-sound-null-safety
-```
+2. 
    
 
 <!-- The-design-architectural-pattern -->

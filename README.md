@@ -54,7 +54,7 @@ To get a local copy up and running, follow these steps.
    ```sh
    git clone https://github.com/Talkleingit/Anomaly-detection-server.git
    ```
-2. 
+
    
 
 <!-- Features-and-Functionality -->
